@@ -113,10 +113,16 @@ public class GetPollGraph {
 		boolean direct = (str=="directed 0")?false:true;
 		str = in.readLine();
 		//System.out.println("tag "+str);
-		while(!str.equals("edge"))
+		while(!(str.equals("edge")||str.equals("edge [")))
 		{
 			str = in.readLine();
-			str = in.readLine();
+			str = str.trim();
+			//System.out.println("Line 100" + str);
+			if(str.equals("["))
+					str = in.readLine();
+			
+	
+			
 			nodes.addRow();
 			row_counter+=1;
 			//System.out.println("line118 "+str);
@@ -154,7 +160,9 @@ public class GetPollGraph {
 		while(!str.equals("]"))
 		{
 			str = in.readLine();
-			str = in.readLine();
+			str = str.trim();
+			if(str.equals("["))
+					str = in.readLine();
 			edges.addRow();
 			edge_counter+=1;
 			//System.out.println("line118 "+str);
@@ -177,6 +185,7 @@ public class GetPollGraph {
 				//	System.out.println("Count"+edges.getColumnCount()+" "+i);
 					edges.addColumn(sarray[0],type.getClass());
 				}
+				//System.out.println(" Line 188"+" "+sarray[0]+" "+sarray[1]);
 				if(sarray[0].equals("target")||sarray[0].equals("source"))
 					edges.set(edge_counter, sarray[0], Integer.parseInt(sarray[1]));
 				else
@@ -190,7 +199,7 @@ public class GetPollGraph {
 			str = str.trim();
 		}
 		in.close();
-		
+		System.out.println(edges.getRowCount());
 		graph = new Graph(nodes, edges, direct);
 
         
