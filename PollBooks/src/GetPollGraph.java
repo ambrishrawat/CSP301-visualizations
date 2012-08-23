@@ -16,6 +16,7 @@ import prefuse.Display;
 import prefuse.Visualization;
 import prefuse.action.ActionList;
 import prefuse.action.RepaintAction;
+import prefuse.action.assignment.ShapeAction;
 import prefuse.action.assignment.ColorAction;
 import prefuse.action.assignment.DataColorAction;
 import prefuse.action.layout.CircleLayout;
@@ -41,7 +42,7 @@ import prefuse.util.PrefuseLib;
 import prefuse.visual.VisualItem;
 import prefuse.visual.expression.InGroupPredicate;
 import prefuse.data.io.TableReader;
-
+import prefuse.*;
 public class GetPollGraph {
 
 	private static Graph graph;
@@ -74,7 +75,7 @@ public class GetPollGraph {
         
         // Shows the window.
         frame.setVisible(true); 
-        vis.run("color");
+        vis.run("config");
         vis.run("layout");
 	}
      
@@ -91,7 +92,7 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -198,7 +199,6 @@ public class GetPollGraph {
 	{
         // Create a default ShapeRenderer
         ShapeRenderer r = new ShapeRenderer();
-        
         // create a new DefaultRendererFactory
         // This Factory will use the ShapeRenderer for all nodes.
         vis.setRendererFactory(new DefaultRendererFactory(r));
@@ -215,8 +215,12 @@ public class GetPollGraph {
         // only want to access those items.
         // The ColorAction must know what to color, what aspect of those 
         // items to color, and the color that should be used.
-        ColorAction fill = new ColorAction("graph.nodes", VisualItem.FILLCOLOR, ColorLib.rgb(0, 200, 0));
-       
+		int[] palette = {ColorLib.rgb(200, 0, 0), ColorLib.rgb(0, 0, 200), ColorLib.rgb(0, 200, 0)};
+		DataColorAction fill = new DataColorAction("graph.nodes", "value",
+				Constants.NOMINAL,
+				VisualItem.FILLCOLOR,
+				palette);
+		ShapeAction shape = new ShapeAction("graph.nodes", Constants.SHAPE_ELLIPSE);
         // Similarly to the node coloring, we use a ColorAction for the 
         // edges
         ColorAction edges = new ColorAction("graph.edges", VisualItem.STROKECOLOR, ColorLib.gray(200));
@@ -224,10 +228,10 @@ public class GetPollGraph {
         // Create an action list containing all color assignments
         // ActionLists are used for actions that will be executed
         // at the same time.  
-        ActionList color = new ActionList();
-        color.add(fill);
-        color.add(edges);
-        
+        ActionList config = new ActionList();
+        config.add(fill);
+        config.add(edges);
+        config.add(shape);
         // The layout ActionList recalculates 
         // the positions of the nodes.
         ActionList layout = new ActionList(Activity.INFINITY);
@@ -241,7 +245,7 @@ public class GetPollGraph {
         layout.add(new RepaintAction());
         
         // add the actions to the visualization
-        vis.putAction("color", color);
+        vis.putAction("config", config);
         vis.putAction("layout", layout);
         
 	}
