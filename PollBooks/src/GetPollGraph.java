@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Random;
 import java.io.*;
+import java.util.*;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -97,10 +98,11 @@ public class GetPollGraph {
 		int edge_counter = -1;
 		Table nodes = new Table();
 		Table edges = new Table();
-		edges.addColumn("source", Integer.TYPE);
-		edges.addColumn("target", Integer.TYPE);
+		edges.addColumn("source", Integer.TYPE, 1);
+		edges.addColumn("target", Integer.TYPE, 1);
+		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
 		
 		String str = new String();
 		str = in.readLine();
@@ -109,7 +111,11 @@ public class GetPollGraph {
 		
 		str = in.readLine();
 		str = in.readLine();
-		str = in.readLine();
+		str = str.trim();
+		if(str.equals("["))
+		{
+			str = in.readLine();
+		}
 		boolean direct = (str=="directed 0")?false:true;
 		str = in.readLine();
 		//System.out.println("tag "+str);
@@ -119,12 +125,17 @@ public class GetPollGraph {
 			str = str.trim();
 			//System.out.println("Line 100" + str);
 			if(str.equals("["))
+			{
 					str = in.readLine();
-			
-	
-			
+			}
+			if(str.equals("id 1"))
+			{
+				nodes.addRow();
+				row_counter++;
+			}
 			nodes.addRow();
-			row_counter+=1;
+			row_counter++;
+			//System.out.println("Row count = "+ row_counter);
 			//System.out.println("line118 "+str);
 			while(!str.equals("]"))
 			{
@@ -132,7 +143,7 @@ public class GetPollGraph {
 				//System.out.println("Line 122" + str);
 				String[] sarray = str.split("\\s+",2);
 				if(sarray[1].matches("\".+\""))
-					sarray[1] = sarray[1].split("\"")[0];
+					sarray[1] = sarray[1].split("\"")[1];
 				int i = 0;
 				while(i< nodes.getColumnCount())
 				{
@@ -158,6 +169,7 @@ public class GetPollGraph {
 		}
 			
 		while(!str.equals("]"))
+//		for(int z = 0; z<9304; z++)
 		{
 			str = in.readLine();
 			str = str.trim();
@@ -165,11 +177,10 @@ public class GetPollGraph {
 					str = in.readLine();
 			edges.addRow();
 			edge_counter+=1;
-			//System.out.println("line118 "+str);
 			while(!str.equals("]"))
 			{
 				str = str.trim();
-		//		System.out.println("Line 122" + str);
+			//	System.out.println("Line 122" + str);
 				String[] sarray = str.split("\\s+",2);
 				int i = 0;
 				while(i< edges.getColumnCount())
@@ -185,7 +196,7 @@ public class GetPollGraph {
 				//	System.out.println("Count"+edges.getColumnCount()+" "+i);
 					edges.addColumn(sarray[0],type.getClass());
 				}
-				//System.out.println(" Line 188"+" "+sarray[0]+" "+sarray[1]);
+				System.out.println(" Line 188"+" "+sarray[0]+" "+sarray[1]+" int: "+Integer.parseInt(sarray[1]));
 				if(sarray[0].equals("target")||sarray[0].equals("source"))
 					edges.set(edge_counter, sarray[0], Integer.parseInt(sarray[1]));
 				else
@@ -200,9 +211,32 @@ public class GetPollGraph {
 		}
 		in.close();
 		System.out.println(edges.getRowCount());
+	/*	Table sortedNodes = new Table();
+		for(int m=0; m<nodes.getColumnCount(); m++)
+		{
+			System.out.println(nodes.getColumnName(m) + nodes.getColumnType(m));
+			sortedNodes.addColumn(nodes.getColumnName(m), nodes.getColumnType(m));
+		}
+		Iterator it = nodes.rowsSortedBy("id", true);
+		System.out.println("No. of Columns: "+ nodes.getColumnCount());
+		for(int n=0; n<=row_counter; n++)
+		{
+			sortedNodes.addRow();
+		}
+		int l= 0;
+		while (it.hasNext())
+		{
+			Object itNext = it.next();
+			//System.out.println("id = " + nodes.getString(l, 0));
+			for(int k=0; k<nodes.getColumnCount(); k++)
+			{
+				sortedNodes.set(l, k, itNext.);
+			}
+			l++;
+		}*/
 		graph = new Graph(nodes, edges, direct);
 
-        
+		System.out.println("Graph made!"); 
        
 	}
 	
