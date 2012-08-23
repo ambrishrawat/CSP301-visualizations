@@ -16,9 +16,7 @@ import prefuse.Display;
 import prefuse.Visualization;
 import prefuse.action.ActionList;
 import prefuse.action.RepaintAction;
-import prefuse.action.assignment.ShapeAction;
-import prefuse.action.assignment.ColorAction;
-import prefuse.action.assignment.DataColorAction;
+import prefuse.action.assignment.*;
 import prefuse.action.layout.CircleLayout;
 import prefuse.action.layout.RandomLayout;
 import prefuse.action.layout.graph.ForceDirectedLayout;
@@ -179,7 +177,20 @@ public class GetPollGraph {
 			str = str.trim();
 		}
 		in.close();
+		
+		nodes.addColumn("indegree", Integer.TYPE);
+		nodes.addColumn("outdegree", Integer.TYPE);
+		nodes.addColumn("degree", Integer.TYPE);
+		
 		graph = new Graph(nodes, edges, direct);
+		
+		for(int k = 0;k< nodes.getRowCount();k++)
+		{
+			nodes.set(k,"degree",graph.getDegree(k));
+			nodes.set(k,"indegree",graph.getInDegree(k));
+			nodes.set(k,"outdegree",graph.getOutDegree(k));
+		}
+		
   	}
 	
     // -- 2. the visualization --------------------------------------------
@@ -224,7 +235,7 @@ public class GetPollGraph {
         // Similarly to the node coloring, we use a ColorAction for the 
         // edges
         ColorAction edges = new ColorAction("graph.edges", VisualItem.STROKECOLOR, ColorLib.gray(200));
-        
+        DataSizeAction size = new DataSizeAction("graph.nodes","degree");
         // Create an action list containing all color assignments
         // ActionLists are used for actions that will be executed
         // at the same time.  
@@ -232,6 +243,7 @@ public class GetPollGraph {
         config.add(fill);
         config.add(edges);
         config.add(shape);
+        config.add(size);
         // The layout ActionList recalculates 
         // the positions of the nodes.
         ActionList layout = new ActionList(Activity.INFINITY);
