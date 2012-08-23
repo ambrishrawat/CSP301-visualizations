@@ -91,7 +91,7 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -169,10 +169,7 @@ public class GetPollGraph {
 				{
 					edges.addColumn(sarray[0],type.getClass());
 				}
-				if(sarray[0].equals("target")||sarray[0].equals("source"))
-					edges.set(edge_counter, sarray[0], Integer.parseInt(sarray[1]));
-				else
-					edges.set(edge_counter, sarray[0], sarray[1]);
+				edges.set(edge_counter, sarray[0], sarray[1]);
 				str = in.readLine();
 				str = str.trim();
 				
