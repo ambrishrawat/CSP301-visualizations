@@ -61,20 +61,12 @@ public class GetPollGraph {
 
         // launch the visualization -------------------------------------
         
-        // The following is standard java.awt.
-        // A JFrame is the basic window element in awt. 
-        // It has a menu (minimize, maximize, close) and can hold
-        // other gui elements. 
-        
         // Create a new window to hold the visualization.  
         // We pass the text value to be displayed in the menubar to the constructor.
-        JFrame frame = new JFrame("prefuse example");
+        JFrame frame = new JFrame("Graph Visualisation");
         
         // Ensure application exits when window is closed
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        // The Display object (d) is a subclass of JComponent, which
-        // can be added to JFrames with the add method.
         frame.add(d);
         
         // Prepares the window.
@@ -82,8 +74,6 @@ public class GetPollGraph {
         
         // Shows the window.
         frame.setVisible(true); 
-        
-        // We have to start the ActionLists that we added to the visualization
         vis.run("color");
         vis.run("layout");
 	}
@@ -91,10 +81,9 @@ public class GetPollGraph {
     // -- 1. load the data ------------------------------------------------
 	public static void setUpData() throws Exception
 	{	
-    	// Here we are manually creating the data structures.  100 nodes are
-    	// added to the Graph structure.  100 edges are made randomly 
-    	// between the nodes.
-		int row_counter = -1;
+    	// Here we are parsing the given .gml file to create two tables named
+		// 'nodes' and 'edges', which we will use to construct the graph.
+    	int row_counter = -1;
 		int edge_counter = -1;
 		Table nodes = new Table();
 		Table edges = new Table();
@@ -102,13 +91,9 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
-		
+		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
 		String str = new String();
 		str = in.readLine();
-		Integer id;
-		String label, value;
-		
 		str = in.readLine();
 		str = in.readLine();
 		str = str.trim();
@@ -118,12 +103,10 @@ public class GetPollGraph {
 		}
 		boolean direct = (str=="directed 0")?false:true;
 		str = in.readLine();
-		//System.out.println("tag "+str);
 		while(!(str.equals("edge")||str.equals("edge [")))
 		{
 			str = in.readLine();
 			str = str.trim();
-			//System.out.println("Line 100" + str);
 			if(str.equals("["))
 			{
 					str = in.readLine();
@@ -135,19 +118,15 @@ public class GetPollGraph {
 			}
 			nodes.addRow();
 			row_counter++;
-			//System.out.println("Row count = "+ row_counter);
-			//System.out.println("line118 "+str);
 			while(!str.equals("]"))
 			{
 				str = str.trim();
-				//System.out.println("Line 122" + str);
 				String[] sarray = str.split("\\s+",2);
 				if(sarray[1].matches("\".+\""))
 					sarray[1] = sarray[1].split("\"")[1];
 				int i = 0;
 				while(i< nodes.getColumnCount())
 				{
-					//System.out.println(nodes.getColumnName(i));
 					if(!nodes.getColumnName(i).equals(sarray[0]))
 						i++;
 					else
@@ -155,11 +134,9 @@ public class GetPollGraph {
 				}
 				if(i==nodes.getColumnCount())
 				{
-				//	System.out.println("Count"+nodes.getColumnCount()+" "+i);
 					nodes.addColumn(sarray[0],type.getClass());
 				}
 				nodes.set(row_counter, sarray[0], sarray[1]);
-				//System.out.println(" Line 138"+" "+str.length()+" "+str);
 				str = in.readLine();
 				str = str.trim();
 				
@@ -169,7 +146,6 @@ public class GetPollGraph {
 		}
 			
 		while(!str.equals("]"))
-//		for(int z = 0; z<9304; z++)
 		{
 			str = in.readLine();
 			str = str.trim();
@@ -180,12 +156,10 @@ public class GetPollGraph {
 			while(!str.equals("]"))
 			{
 				str = str.trim();
-			//	System.out.println("Line 122" + str);
 				String[] sarray = str.split("\\s+",2);
 				int i = 0;
 				while(i< edges.getColumnCount())
 				{
-			//		System.out.println(edges.getColumnName(i));
 					if(!edges.getColumnName(i).equals(sarray[0]))
 						i++;
 					else
@@ -193,15 +167,12 @@ public class GetPollGraph {
 				}
 				if(i==edges.getColumnCount())
 				{
-				//	System.out.println("Count"+edges.getColumnCount()+" "+i);
 					edges.addColumn(sarray[0],type.getClass());
 				}
-				System.out.println(" Line 188"+" "+sarray[0]+" "+sarray[1]+" int: "+Integer.parseInt(sarray[1]));
 				if(sarray[0].equals("target")||sarray[0].equals("source"))
 					edges.set(edge_counter, sarray[0], Integer.parseInt(sarray[1]));
 				else
 					edges.set(edge_counter, sarray[0], sarray[1]);
-				//System.out.println(" Line 138"+" "+str.length()+" "+str);
 				str = in.readLine();
 				str = str.trim();
 				
@@ -210,35 +181,8 @@ public class GetPollGraph {
 			str = str.trim();
 		}
 		in.close();
-		System.out.println(edges.getRowCount());
-	/*	Table sortedNodes = new Table();
-		for(int m=0; m<nodes.getColumnCount(); m++)
-		{
-			System.out.println(nodes.getColumnName(m) + nodes.getColumnType(m));
-			sortedNodes.addColumn(nodes.getColumnName(m), nodes.getColumnType(m));
-		}
-		Iterator it = nodes.rowsSortedBy("id", true);
-		System.out.println("No. of Columns: "+ nodes.getColumnCount());
-		for(int n=0; n<=row_counter; n++)
-		{
-			sortedNodes.addRow();
-		}
-		int l= 0;
-		while (it.hasNext())
-		{
-			Object itNext = it.next();
-			//System.out.println("id = " + nodes.getString(l, 0));
-			for(int k=0; k<nodes.getColumnCount(); k++)
-			{
-				sortedNodes.set(l, k, itNext.);
-			}
-			l++;
-		}*/
 		graph = new Graph(nodes, edges, direct);
-
-		System.out.println("Graph made!"); 
-       
-	}
+  	}
 	
     // -- 2. the visualization --------------------------------------------
 	public static void setUpVisualization()
