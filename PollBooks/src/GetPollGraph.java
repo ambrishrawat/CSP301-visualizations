@@ -282,6 +282,12 @@ public class GetPollGraph {
         d.addControlListener(new PanControl()); 
         // Zoom with right-click drag
         d.addControlListener(new ZoomControl());
+        
+        d.addControlListener(new FinalControlListener());
+
+
+
+
 	}
     
 }
