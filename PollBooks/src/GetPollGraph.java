@@ -91,7 +91,7 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -228,15 +228,13 @@ public class GetPollGraph {
         // The ColorAction must know what to color, what aspect of those 
         // items to color, and the color that should be used.
 		int[] palette = {ColorLib.rgb(200, 0, 0), ColorLib.rgb(0, 0, 200), ColorLib.rgb(0, 200, 0)};
-		DataColorAction fill = new DataColorAction("graph.nodes", "value",
-				Constants.NOMINAL,
-				VisualItem.FILLCOLOR,
-				palette);
+		DataColorAction fill = new DataColorAction("graph.nodes", "value",Constants.NOMINAL,VisualItem.FILLCOLOR,palette);
 		ShapeAction shape = new ShapeAction("graph.nodes", Constants.SHAPE_ELLIPSE);
         // Similarly to the node coloring, we use a ColorAction for the 
         // edges
         ColorAction edges = new ColorAction("graph.edges", VisualItem.STROKECOLOR, ColorLib.gray(200));
-        DataSizeAction size = new DataSizeAction("graph.nodes","degree");
+        DataSizeAction size = new DataSizeAction("graph.nodes","degree",Constants.CONTINUOUS,Constants.SQRT_SCALE);
+        size.setMaximumSize(50);
         // Create an action list containing all color assignments
         // ActionLists are used for actions that will be executed
         // at the same time.  
@@ -252,6 +250,7 @@ public class GetPollGraph {
         // We add the layout to the layout ActionList, and tell it
         // to operate on the "graph".
         layout.add(new ForceDirectedLayout("graph",true));
+        //layout.add(new RandomLayout("graph"));
         
         // We add a RepaintAction so that every time the layout is 
         // changed, the Visualization updates it's screen.
