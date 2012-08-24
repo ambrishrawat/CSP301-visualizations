@@ -22,6 +22,7 @@ import prefuse.action.layout.RandomLayout;
 import prefuse.action.layout.graph.ForceDirectedLayout;
 import prefuse.activity.Activity;
 import prefuse.controls.DragControl;
+import prefuse.controls.NeighborHighlightControl;
 import prefuse.controls.PanControl;
 import prefuse.controls.ZoomControl;
 import prefuse.data.Graph;
@@ -282,6 +283,7 @@ public class GetPollGraph {
         d.addControlListener(new PanControl()); 
         // Zoom with right-click drag
         d.addControlListener(new ZoomControl());
+        //d.addControlListener(new NeighborHighlightControl());
         
         d.addControlListener(new FinalControlListener());
 

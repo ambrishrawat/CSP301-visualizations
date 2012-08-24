@@ -4,12 +4,15 @@ import java.awt.event.MouseWheelEvent;
 import javax.swing.JPopupMenu;
 import prefuse.controls.ControlAdapter;
 import prefuse.controls.Control;
+import prefuse.util.ColorLib;
 import prefuse.visual.NodeItem;
 import prefuse.visual.VisualItem;
 
 public class FinalControlListener extends ControlAdapter implements Control
 {
-	public void itemClicked(VisualItem item, MouseEvent e)
+	
+	
+	public void itemEntered(VisualItem item, MouseEvent e)
 	{
 		if(item instanceof NodeItem)
 		{
@@ -19,6 +22,10 @@ public class FinalControlListener extends ControlAdapter implements Control
 			jpub.add("label: " + label);
 			jpub.add("Id: " + id);
 			jpub.show(e.getComponent(),(int) item.getX(),(int) item.getY());
+	
+	
 		}
 	}
+	
+	
 }
