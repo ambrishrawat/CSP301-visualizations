@@ -42,8 +42,8 @@ public class FinalRenderer extends AbstractShapeRenderer
         
         if(item instanceof NodeItem)
         {
-        	width = 3*Math.sqrt(((Integer)item.get("degree")).intValue())+1;
-        	height = 3*Math.sqrt(((Integer)item.get("degree")).intValue())+1;
+        	width = 3*Math.sqrt(((Integer)item.get("degree")).intValue())+3;
+        	height = 3*Math.sqrt(((Integer)item.get("degree")).intValue())+3;
         }
         
         
