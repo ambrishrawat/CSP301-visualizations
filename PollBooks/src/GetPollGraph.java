@@ -91,7 +91,7 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -210,7 +210,7 @@ public class GetPollGraph {
 	public static void setUpRenderers()
 	{
         // Create a default ShapeRenderer
-        ShapeRenderer r = new ShapeRenderer();
+        FinalRenderer r = new FinalRenderer();
         // create a new DefaultRendererFactory
         // This Factory will use the ShapeRenderer for all nodes.
         vis.setRendererFactory(new DefaultRendererFactory(r));
@@ -233,7 +233,7 @@ public class GetPollGraph {
         // Similarly to the node coloring, we use a ColorAction for the 
         // edges
         ColorAction edges = new ColorAction("graph.edges", VisualItem.STROKECOLOR, ColorLib.gray(200));
-        DataSizeAction size = new DataSizeAction("graph.nodes","degree",Constants.CONTINUOUS,Constants.SQRT_SCALE);
+        //DataSizeAction size = new DataSizeAction("graph.nodes","degree",Constants.CONTINUOUS,Constants.SQRT_SCALE);
         //size.setMaximumSize(50);
         // Create an action list containing all color assignments
         // ActionLists are used for actions that will be executed
@@ -242,7 +242,7 @@ public class GetPollGraph {
         config.add(fill);
         config.add(edges);
         config.add(shape);
-        config.add(size);
+        //config.add(size);
         // The layout ActionList recalculates 
         // the positions of the nodes.
         ActionList layout = new ActionList(Activity.INFINITY);
@@ -271,7 +271,7 @@ public class GetPollGraph {
 		d = new Display(vis);
         
         // Set the size of the display.
-        d.setSize(720, 500); 
+        d.setSize(1600, 900); 
         
         // We use the addControlListener method to set up interaction.
         

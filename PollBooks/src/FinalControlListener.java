@@ -24,7 +24,6 @@ public class FinalControlListener extends ControlAdapter implements Control
 		{
 			String label = ((String) item.get("label"));
 			int id = (Integer) item.get("id");
-			
 			temp_color  = item.getFillColor();
 			item.setFillColor(ColorLib.rgb(10, 10, 10));
 			jpub = new JPopupMenu();
