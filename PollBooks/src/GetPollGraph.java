@@ -228,10 +228,10 @@ public class GetPollGraph {
         // only want to access those items.
         // The ColorAction must know what to color, what aspect of those 
         // items to color, and the color that should be used.
-		int[] palette = {ColorLib.rgb(200, 0, 0), ColorLib.rgb(0, 0, 200), ColorLib.rgb(0, 200, 0)};
+		int[] palette = {ColorLib.rgba(200, 0, 0,135), ColorLib.rgba(0, 0, 200,135), ColorLib.rgba(0, 200, 0,135)};
 		DataColorAction fill = new DataColorAction("graph.nodes", "value",Constants.NOMINAL,VisualItem.FILLCOLOR,palette);
-		fill.add(VisualItem.FIXED, ColorLib.rgb(200, 200, 255));
-        fill.add(VisualItem.HIGHLIGHT, ColorLib.rgb(70, 120, 130));
+		fill.add(VisualItem.FIXED, ColorLib.rgba(200, 200, 255,200));
+        fill.add(VisualItem.HIGHLIGHT, ColorLib.rgba(150, 150, 150,200));
 		ShapeAction shape = new ShapeAction("graph.nodes", Constants.SHAPE_ELLIPSE);
         // Similarly to the node coloring, we use a ColorAction for the 
         // edges
@@ -280,6 +280,7 @@ public class GetPollGraph {
         d.setSize(1300, 700);
         d.pan(650, 350);
         
+        //d.setBackgroundImage("./vader.jpg", true, true);
         // We use the addControlListener method to set up interaction.
         
         // The DragControl is a built in class for manually moving
