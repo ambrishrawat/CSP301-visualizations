@@ -15,6 +15,8 @@ import prefuse.action.assignment.*;
 public class FinalControlListener extends ControlAdapter implements Control
 {
 	
+	private JPopupMenu jpub;
+	private int temp_color;
 	
 	public void itemEntered(VisualItem item, MouseEvent e)
 	{
@@ -23,18 +25,25 @@ public class FinalControlListener extends ControlAdapter implements Control
 			String label = ((String) item.get("label"));
 			int id = (Integer) item.get("id");
 			
-			//DataSizeAction size = new DataSizeAction("graph.nodes","degree");
-			//double s = size.getSize(item);
-			
-			JPopupMenu jpub = new JPopupMenu();
+			temp_color  = item.getFillColor();
+			item.setFillColor(ColorLib.rgb(10, 10, 10));
+			jpub = new JPopupMenu();
 			jpub.add("label: " + label);
 			jpub.add("Id: " + id);
-			//jpub.add("Size: " + size);
 			jpub.show(e.getComponent(),(int) item.getX(),(int) item.getY());
 			
 	
 		}
 	}
 	
+	@Override 
+	public void itemExited(VisualItem item, MouseEvent e)
+	{
+		if(item instanceof NodeItem)
+		{
+			jpub.setVisible(false);
+			item.setFillColor(temp_color);
+		}
+	}
 	
 }

@@ -91,7 +91,7 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -234,7 +234,7 @@ public class GetPollGraph {
         // edges
         ColorAction edges = new ColorAction("graph.edges", VisualItem.STROKECOLOR, ColorLib.gray(200));
         DataSizeAction size = new DataSizeAction("graph.nodes","degree",Constants.CONTINUOUS,Constants.SQRT_SCALE);
-        size.setMaximumSize(50);
+        //size.setMaximumSize(50);
         // Create an action list containing all color assignments
         // ActionLists are used for actions that will be executed
         // at the same time.  
