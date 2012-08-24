@@ -16,7 +16,7 @@ public class FinalControlListener extends ControlAdapter implements Control
 {
 	
 	private JPopupMenu jpub;
-	private int temp_color;
+	//private int temp_color;
 	
 	public void itemEntered(VisualItem item, MouseEvent e)
 	{
@@ -24,12 +24,12 @@ public class FinalControlListener extends ControlAdapter implements Control
 		{
 			String label = ((String) item.get("label"));
 			int id = (Integer) item.get("id");
-			temp_color  = item.getFillColor();
-			item.setFillColor(ColorLib.rgb(10, 10, 10));
+			//temp_color  = item.getFillColor();
+			//item.setFillColor(ColorLib.rgb(10, 10, 10));
 			jpub = new JPopupMenu();
 			jpub.add("label: " + label);
 			jpub.add("Id: " + id);
-			jpub.show(e.getComponent(),(int) item.getX(),(int) item.getY());
+			jpub.show(e.getComponent(),0,640);
 			
 	
 		}
@@ -41,7 +41,7 @@ public class FinalControlListener extends ControlAdapter implements Control
 		if(item instanceof NodeItem)
 		{
 			jpub.setVisible(false);
-			item.setFillColor(temp_color);
+			//item.setFillColor(temp_color);
 		}
 	}
 	

@@ -91,7 +91,8 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
+		//BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -229,6 +230,8 @@ public class GetPollGraph {
         // items to color, and the color that should be used.
 		int[] palette = {ColorLib.rgb(200, 0, 0), ColorLib.rgb(0, 0, 200), ColorLib.rgb(0, 200, 0)};
 		DataColorAction fill = new DataColorAction("graph.nodes", "value",Constants.NOMINAL,VisualItem.FILLCOLOR,palette);
+		fill.add(VisualItem.FIXED, ColorLib.rgb(200, 200, 255));
+        fill.add(VisualItem.HIGHLIGHT, ColorLib.rgb(70, 120, 130));
 		ShapeAction shape = new ShapeAction("graph.nodes", Constants.SHAPE_ELLIPSE);
         // Similarly to the node coloring, we use a ColorAction for the 
         // edges
@@ -249,7 +252,10 @@ public class GetPollGraph {
         
         // We add the layout to the layout ActionList, and tell it
         // to operate on the "graph".
-        layout.add(new ForceDirectedLayout("graph",true));
+        ForceDirectedLayout force = new ForceDirectedLayout("graph",true);
+        //force.setMargin(1000, 1000, 1000, 1000);
+        layout.add(force);
+        layout.add(fill);
         //layout.add(new RandomLayout("graph"));
         
         // We add a RepaintAction so that every time the layout is 
@@ -271,7 +277,8 @@ public class GetPollGraph {
 		d = new Display(vis);
         
         // Set the size of the display.
-        d.setSize(1600, 900); 
+        d.setSize(1300, 700);
+        d.pan(650, 350);
         
         // We use the addControlListener method to set up interaction.
         
@@ -282,7 +289,7 @@ public class GetPollGraph {
         d.addControlListener(new PanControl()); 
         // Zoom with right-click drag
         d.addControlListener(new ZoomControl());
-        //d.addControlListener(new NeighborHighlightControl());
+        d.addControlListener(new NeighborHighlightControl());
         
         d.addControlListener(new FinalControlListener());
 
