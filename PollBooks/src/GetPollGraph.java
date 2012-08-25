@@ -55,12 +55,11 @@ public class GetPollGraph {
 	{
     	
 		setUpData();
-		DegreePlot();		
-		setRandomGraphs();
 		setUpVisualization();
 		setUpRenderers();
 		setUpActions();
 		setUpDisplay();
+		
 
         // launch the visualization -------------------------------------
         
@@ -79,6 +78,10 @@ public class GetPollGraph {
         frame.setVisible(true); 
         vis.run("config");
         vis.run("layout");
+        DegreePlot();		
+		setRandomGraphs();
+		setRandomGraphsClustringCoeff();
+        return;
 	}
      
     // -- 1. load the data ------------------------------------------------
@@ -94,8 +97,8 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
-		//BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
+		//BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -386,33 +389,52 @@ public class GetPollGraph {
 	public static double CalcClusteringCoeff(Graph rangraph)
 	{
 		double counter=0.0;
+		
 		for(int i=0;i<rangraph.getNodeCount();i++)
 		{
-			while(rangraph.getNode(i).neighbors().hasNext())
+			//for(int j=0; j<rangraph.getNode(i).getDegree(); j++)
+			//{
+			Iterator<Node> current = rangraph.getNode(i).neighbors(); 
+			
+			while(current.hasNext())
 			{
-				//rangraph.getEdgeTable().containsTuple(t)	
-			}
-			for(int j=0; j<rangraph.getNode(i).getDegree(); j++)
-			{
+				Iterator<Node> temp = current;
+				Integer x = ((Integer)(current.next().get("id")));
+				while(temp.hasNext())
+				{
+					Node tempNext = temp.next();
+					Iterator<Node> ineigh = rangraph.getNode(x.intValue()).neighbors();
+					do
+					{
+						Node ineighNext = (Node)ineigh.next();
+						if(((Integer)((ineighNext).get("id"))).equals(((Integer)(tempNext.get("id")))))
+						{
+							counter +=1;
+							//System.out.ptintln(x+" "+tempNext.get("id")).intValue()+" "+ineighNext.get("id"));
+						}
+					}
+					while((ineigh.hasNext()&&temp.hasNext()));
+					
+				}
+				//rangraph.getEdgeTable().containsTuple(t)
 				
 			}
-			if(rangraph.getEdge(i).getSourceNode().get("value").equals(rangraph.getEdge(i).getTargetNode().get("value")))
-			{
-				counter+=1;
-			}
+			//}
+			
 		}
-		counter = counter/rangraph.getEdgeCount();
+		int n = rangraph.getNodeCount();
+		counter = (20*counter)/(n*(n-1));
 		return counter;
 	}
 	
 	public static void setRandomGraphsClustringCoeff() throws Exception
 	{
 		BufferedWriter out = new BufferedWriter(new FileWriter("./ClusteringCoeffPlot.dat"));
-		out.write(((Double)CalcEdgeRatio(graph)).toString());
+		out.write(((Double)CalcClusteringCoeff(graph)).toString());
 		out.newLine();
 		for(int j=2; j<=100; j++)
 		{
-			//System.out.println(j);
+			System.out.println(j);
 			Graph g = new Graph(graph.getNodeTable(),graph.isDirected());
 			int edge_count = 0;
 			for(int i = 0;i <graph.getEdgeCount();i++)
@@ -421,19 +443,17 @@ public class GetPollGraph {
 				int n = r.nextInt(graph.getNodeCount());
 				int m = r.nextInt(graph.getNodeCount());
 				if(m==0)
-				{
 					m++;
-				}
 				if(n==0)
 					n++;				
 				
 				g.addEdge(n, m);
 			}
-			out.write(((Double)CalcEdgeRatio(g)).toString());
+			out.write(((Double)CalcClusteringCoeff(g)).toString());
 			out.newLine();
 		}
 		out.close();
-		System.out.println("EdgeRatioFile Created Successfully");
+		System.out.println("ClusteringCoefFile Created Successfully");
 	}
     
 }
