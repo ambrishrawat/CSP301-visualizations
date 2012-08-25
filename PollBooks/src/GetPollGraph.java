@@ -20,6 +20,7 @@ import prefuse.action.assignment.*;
 import prefuse.action.layout.CircleLayout;
 import prefuse.action.layout.RandomLayout;
 import prefuse.action.layout.graph.ForceDirectedLayout;
+import prefuse.action.layout.graph.FruchtermanReingoldLayout;
 import prefuse.activity.Activity;
 import prefuse.controls.DragControl;
 import prefuse.controls.NeighborHighlightControl;
@@ -53,7 +54,8 @@ public class GetPollGraph {
 	{
     	
 		setUpData();
-		
+		DegreePlot();		
+			
 		setUpVisualization();
 		setUpRenderers();
 		setUpActions();
@@ -252,7 +254,8 @@ public class GetPollGraph {
         
         // We add the layout to the layout ActionList, and tell it
         // to operate on the "graph".
-        ForceDirectedLayout force = new ForceDirectedLayout("graph",true);
+        //FruchtermanReingoldLayout force = new FruchtermanReingoldLayout("graph");
+        ForceDirectedLayout force = new ForceDirectedLayout("graph", true);
         //force.setMargin(1000, 1000, 1000, 1000);
         layout.add(force);
         layout.add(fill);
@@ -297,6 +300,29 @@ public class GetPollGraph {
 
 
 
+	}
+	
+	public static void DegreePlot() throws Exception
+	{
+		//int a[] = new int[graph.getNodeCount()];
+		BufferedWriter out = new BufferedWriter(new FileWriter("./DegreePlot.dat"));
+		//out.write("#File");
+		//out.newLine();
+		//out.write("\t#NodeId\tDegree");
+		//out.newLine();
+		for(int i = 0;i<graph.getNodeCount();i++)
+		{
+			out.write(graph.getDegree(i)+"\t"+i);
+			//out.write(graph.getDegree(i));
+			//a[i] = graph.getDegree(i);
+			out.newLine();
+			
+		}
+		
+		
+		out.close();
+		System.out.println("File Created Successfully");
+		
 	}
     
 }
