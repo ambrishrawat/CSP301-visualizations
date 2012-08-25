@@ -85,8 +85,8 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
-		//BufferedReader in = new BufferedReader(new FileReader("./polblogs/polblogs.gml"));
+		//BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./polblogs/polblogs.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();

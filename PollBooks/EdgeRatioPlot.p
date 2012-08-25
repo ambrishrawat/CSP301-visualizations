@@ -9,9 +9,9 @@ set xtics auto
 set ytics auto
 #set yrange[0:32]
 # Make some suitable labels.
-set title "Demo graph"
-set xlabel "Value"
-set ylabel "Count"
+set title "Edge Ratio plot for 100 random graphs and the given graph"
+set xlabel "Edge Ratio"
+set ylabel "Frequency"
  
 set terminal png enhanced font arial 14 size 2020, 1024
 ft="png"
