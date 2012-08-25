@@ -163,7 +163,36 @@ public class GetPollGraph {
 			str = in.readLine();
 			str = str.trim();
 		}
+
+		str = in.readLine();
+		str = str.trim();
+		if(str.equals("["))
+				str = in.readLine();
+		edges.addRow();
+		edge_counter+=1;
+		while(!str.equals("]"))
+		{
+			str = str.trim();
+			String[] sarray = str.split("\\s+",2);
+			int i = 0;
+			while(i< edges.getColumnCount())
+			{
+				if(!edges.getColumnName(i).equals(sarray[0]))
+					i++;
+				else
+					break;
+			}
+			if(i==edges.getColumnCount())
+			{
+				edges.addColumn(sarray[0],type.getClass());
+			}
+			edges.set(edge_counter, sarray[0], sarray[1]);
+			str = in.readLine();
+			str = str.trim();
 			
+		}
+		str = in.readLine();
+		str = str.trim();
 		while(!str.equals("]"))
 		{
 			str = in.readLine();
@@ -177,17 +206,6 @@ public class GetPollGraph {
 				str = str.trim();
 				String[] sarray = str.split("\\s+",2);
 				int i = 0;
-				while(i< edges.getColumnCount())
-				{
-					if(!edges.getColumnName(i).equals(sarray[0]))
-						i++;
-					else
-						break;
-				}
-				if(i==edges.getColumnCount())
-				{
-					edges.addColumn(sarray[0],type.getClass());
-				}
 				edges.set(edge_counter, sarray[0], sarray[1]);
 				str = in.readLine();
 				str = str.trim();
