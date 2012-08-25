@@ -56,7 +56,7 @@ public class GetPollGraph {
     	
 		setUpData();
 		DegreePlot();		
-			
+		setRandomGraphs();
 		setUpVisualization();
 		setUpRenderers();
 		setUpActions();
@@ -94,8 +94,8 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		//BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
-		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
+		//BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -226,7 +226,7 @@ public class GetPollGraph {
         // create a new DefaultRendererFactory
         // This Factory will use the ShapeRenderer for all nodes.
         vis.setRendererFactory(new DefaultRendererFactory(r,e));
-        System.out.println(graph.isDirected());
+       
 	}
 	
 	public static void setUpActions()
@@ -336,6 +336,104 @@ public class GetPollGraph {
 		out.close();
 		System.out.println("File Created Successfully");
 		
+	}
+	
+	public static double CalcEdgeRatio(Graph rangraph)
+	{
+		double counter=0.0;
+		for(int i=0;i<rangraph.getEdgeCount();i++)
+		{
+			if(rangraph.getEdge(i).getSourceNode().get("value").equals(rangraph.getEdge(i).getTargetNode().get("value")))
+			{
+				counter+=1;
+			}
+		}
+		counter = counter/rangraph.getEdgeCount();
+		return counter;
+	}
+	
+	public static void setRandomGraphs() throws Exception
+	{
+		BufferedWriter out = new BufferedWriter(new FileWriter("./EdgeRatioPlot.dat"));
+		out.write(((Double)CalcEdgeRatio(graph)).toString());
+		out.newLine();
+		for(int j=2; j<=100; j++)
+		{
+			//System.out.println(j);
+			Graph g = new Graph(graph.getNodeTable(),graph.isDirected());
+			int edge_count = 0;
+			for(int i = 0;i <graph.getEdgeCount();i++)
+			{
+				Random r = new Random();
+				int n = r.nextInt(graph.getNodeCount());
+				int m = r.nextInt(graph.getNodeCount());
+				if(m==0)
+				{
+					m++;
+				}
+				if(n==0)
+					n++;				
+				
+				g.addEdge(n, m);
+			}
+			out.write(((Double)CalcEdgeRatio(g)).toString());
+			out.newLine();
+		}
+		out.close();
+		System.out.println("EdgeRatioFile Created Successfully");
+	}
+	
+	public static double CalcClusteringCoeff(Graph rangraph)
+	{
+		double counter=0.0;
+		for(int i=0;i<rangraph.getNodeCount();i++)
+		{
+			while(rangraph.getNode(i).neighbors().hasNext())
+			{
+				//rangraph.getEdgeTable().containsTuple(t)	
+			}
+			for(int j=0; j<rangraph.getNode(i).getDegree(); j++)
+			{
+				
+			}
+			if(rangraph.getEdge(i).getSourceNode().get("value").equals(rangraph.getEdge(i).getTargetNode().get("value")))
+			{
+				counter+=1;
+			}
+		}
+		counter = counter/rangraph.getEdgeCount();
+		return counter;
+	}
+	
+	public static void setRandomGraphsClustringCoeff() throws Exception
+	{
+		BufferedWriter out = new BufferedWriter(new FileWriter("./ClusteringCoeffPlot.dat"));
+		out.write(((Double)CalcEdgeRatio(graph)).toString());
+		out.newLine();
+		for(int j=2; j<=100; j++)
+		{
+			//System.out.println(j);
+			Graph g = new Graph(graph.getNodeTable(),graph.isDirected());
+			int edge_count = 0;
+			for(int i = 0;i <graph.getEdgeCount();i++)
+			{
+				Random r = new Random();
+				int n = r.nextInt(graph.getNodeCount());
+				int m = r.nextInt(graph.getNodeCount());
+				if(m==0)
+				{
+					m++;
+				}
+				if(n==0)
+					n++;				
+				
+				g.addEdge(n, m);
+			}
+			out.write(((Double)CalcEdgeRatio(g)).toString());
+			out.newLine();
+		}
+		out.close();
+		System.out.println("EdgeRatioFile Created Successfully");
 	}
     
 }
