@@ -18,7 +18,6 @@ import prefuse.visual.VisualItem;
 public class FinalRenderer extends AbstractShapeRenderer
 {
 	private int m_baseSize = 10;
-	//protected RectangularShape m_box = new Rectangle2D.Double();
 	protected Ellipse2D m_box = new Ellipse2D.Double();
 	
 	@Override

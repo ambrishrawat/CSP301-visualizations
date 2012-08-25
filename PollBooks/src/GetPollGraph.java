@@ -59,22 +59,10 @@ public class GetPollGraph {
 		setUpRenderers();
 		setUpActions();
 		setUpDisplay();
-		
-
-        // launch the visualization -------------------------------------
-        
-        // Create a new window to hold the visualization.  
-        // We pass the text value to be displayed in the menubar to the constructor.
-        JFrame frame = new JFrame("Graph Visualisation");
-        
-        // Ensure application exits when window is closed
+		JFrame frame = new JFrame("Graph Visualisation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(d);
-        
-        // Prepares the window.
         frame.pack();           
-        
-        // Shows the window.
         frame.setVisible(true); 
         vis.run("config");
         vis.run("layout");
@@ -97,8 +85,8 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		//BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
-		BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
+		//BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -112,6 +100,45 @@ public class GetPollGraph {
 		boolean direct = (str.equals("directed 0"))?false:true;
 		str = in.readLine();
 		str = str.trim();
+		str = in.readLine();
+		str = str.trim();
+		if(str.equals("["))
+		{
+				str = in.readLine();
+		}
+		if(str.equals("id 1"))
+		{
+			nodes.addRow();
+			row_counter++;
+		}
+		nodes.addRow();
+		row_counter++;
+		while(!str.equals("]"))
+		{
+			str = str.trim();
+			String[] sarray = str.split("\\s+",2);
+			if(sarray[1].matches("\".+\""))
+				sarray[1] = sarray[1].split("\"")[1];
+			int i = 0;
+			while(i< nodes.getColumnCount())
+			{
+				if(!nodes.getColumnName(i).equals(sarray[0]))
+					i++;
+				else
+					break;
+			}
+			if(i==nodes.getColumnCount())
+			{
+				nodes.addColumn(sarray[0],type.getClass());
+			}
+			nodes.set(row_counter, sarray[0], sarray[1]);
+			str = in.readLine();
+			str = str.trim();
+			
+		}
+		str = in.readLine();
+		str = str.trim();
+	
 		while(!(str.equals("edge")||str.equals("edge [")))
 		{
 			str = in.readLine();
@@ -119,11 +146,6 @@ public class GetPollGraph {
 			if(str.equals("["))
 			{
 					str = in.readLine();
-			}
-			if(str.equals("id 1"))
-			{
-				nodes.addRow();
-				row_counter++;
 			}
 			nodes.addRow();
 			row_counter++;
@@ -133,18 +155,6 @@ public class GetPollGraph {
 				String[] sarray = str.split("\\s+",2);
 				if(sarray[1].matches("\".+\""))
 					sarray[1] = sarray[1].split("\"")[1];
-				int i = 0;
-				while(i< nodes.getColumnCount())
-				{
-					if(!nodes.getColumnName(i).equals(sarray[0]))
-						i++;
-					else
-						break;
-				}
-				if(i==nodes.getColumnCount())
-				{
-					nodes.addColumn(sarray[0],type.getClass());
-				}
 				nodes.set(row_counter, sarray[0], sarray[1]);
 				str = in.readLine();
 				str = str.trim();
@@ -206,11 +216,7 @@ public class GetPollGraph {
     // -- 2. the visualization --------------------------------------------
 	public static void setUpVisualization()
 	{
-        // Create the Visualization object.
-		vis = new Visualization();
-        
-        // Now we add our previously created Graph object to the visualization.
-        // The graph gets a textual label so that we can refer to it later on.
+        vis = new Visualization();
         vis.add("graph", graph);
         
 	}
@@ -218,7 +224,6 @@ public class GetPollGraph {
     // -- 3. the renderers and renderer factory ---------------------------
 	public static void setUpRenderers()
 	{
-        // Create a default ShapeRenderer
         FinalRenderer r = new FinalRenderer();
         EdgeRenderer e = new EdgeRenderer(Constants.EDGE_TYPE_LINE, Constants.EDGE_ARROW_NONE);
         if(graph.isDirected())
@@ -226,10 +231,7 @@ public class GetPollGraph {
         	e.setArrowType(Constants.EDGE_ARROW_FORWARD);
         	e.setArrowHeadSize(7, 7);
         }
-        // create a new DefaultRendererFactory
-        // This Factory will use the ShapeRenderer for all nodes.
         vis.setRendererFactory(new DefaultRendererFactory(r,e));
-       
 	}
 	
 	public static void setUpActions()
@@ -237,51 +239,23 @@ public class GetPollGraph {
 		
         // -- 4. the processing actions ---------------------------------------
         
-        // We must color the nodes of the graph.  
-        // Notice that we refer to the nodes using the text label for the graph,
-        // and then appending ".nodes".  The same will work for ".edges" when we
-        // only want to access those items.
-        // The ColorAction must know what to color, what aspect of those 
-        // items to color, and the color that should be used.
-		int[] palette = {ColorLib.rgba(200, 0, 0,135), ColorLib.rgba(0, 0, 200,135), ColorLib.rgba(0, 200, 0,135)};
+        int[] palette = {ColorLib.rgba(200, 0, 0,135), ColorLib.rgba(0, 0, 200,135), ColorLib.rgba(0, 200, 0,135)};
 		DataColorAction fill = new DataColorAction("graph.nodes", "value",Constants.NOMINAL,VisualItem.FILLCOLOR,palette);
 		fill.add(VisualItem.FIXED, ColorLib.rgba(200, 200, 255,200));
         fill.add(VisualItem.HIGHLIGHT, ColorLib.rgba(150, 150, 150,200));
 		ShapeAction shape = new ShapeAction("graph.nodes", Constants.SHAPE_ELLIPSE);
-        // Similarly to the node coloring, we use a ColorAction for the 
-        // edges
         ColorAction edges = new ColorAction("graph.edges", VisualItem.STROKECOLOR, ColorLib.gray(200));
-        
-        //DataSizeAction size = new DataSizeAction("graph.nodes","degree",Constants.CONTINUOUS,Constants.SQRT_SCALE);
-        //size.setMaximumSize(50);
-        // Create an action list containing all color assignments
-        // ActionLists are used for actions that will be executed
-        // at the same time.  
         ActionList config = new ActionList();
         config.add(fill);
         config.add(edges);
         config.add(shape);
         if(graph.isDirected())
         	config.add(new ColorAction("graph.edges", VisualItem.FILLCOLOR, ColorLib.gray(200)));
-        //config.add(size);
-        // The layout ActionList recalculates 
-        // the positions of the nodes.
         ActionList layout = new ActionList(Activity.INFINITY);
-        
-        // We add the layout to the layout ActionList, and tell it
-        // to operate on the "graph".
-        //FruchtermanReingoldLayout force = new FruchtermanReingoldLayout("graph");
         ForceDirectedLayout force = new ForceDirectedLayout("graph", true);
-        //force.setMargin(1000, 1000, 1000, 1000);
         layout.add(force);
         layout.add(fill);
-        //layout.add(new RandomLayout("graph"));
-        
-        // We add a RepaintAction so that every time the layout is 
-        // changed, the Visualization updates it's screen.
         layout.add(new RepaintAction());
-        
-        // add the actions to the visualization
         vis.putAction("config", config);
         vis.putAction("layout", layout);
         
@@ -291,51 +265,24 @@ public class GetPollGraph {
 	{
         // -- 5. the display and interactive controls -------------------------
         
-        // Create the Display object, and pass it the visualization that it 
-        // will hold.
-		d = new Display(vis);
-        
-        // Set the size of the display.
+        d = new Display(vis);
         d.setSize(1300, 700);
         d.pan(650, 350);
-        
-        //d.setBackgroundImage("./vader.jpg", true, true);
-        // We use the addControlListener method to set up interaction.
-        
-        // The DragControl is a built in class for manually moving
-        // nodes with the mouse. 
         d.addControlListener(new DragControl());
-        // Pan with left-click drag on background
         d.addControlListener(new PanControl()); 
-        // Zoom with right-click drag
         d.addControlListener(new ZoomControl());
         d.addControlListener(new NeighborHighlightControl());
-        
         d.addControlListener(new FinalControlListener());
-
-
-
-
 	}
 	
 	public static void DegreePlot() throws Exception
 	{
-		//int a[] = new int[graph.getNodeCount()];
 		BufferedWriter out = new BufferedWriter(new FileWriter("./DegreePlot.dat"));
-		//out.write("#File");
-		//out.newLine();
-		//out.write("\t#NodeId\tDegree");
-		//out.newLine();
 		for(int i = 0;i<graph.getNodeCount();i++)
 		{
 			out.write(graph.getDegree(i)+"\t"+i);
-			//out.write(graph.getDegree(i));
-			//a[i] = graph.getDegree(i);
 			out.newLine();
-			
 		}
-		
-		
 		out.close();
 		System.out.println("File Created Successfully");
 		
@@ -362,7 +309,6 @@ public class GetPollGraph {
 		out.newLine();
 		for(int j=2; j<=100; j++)
 		{
-			//System.out.println(j);
 			Graph g = new Graph(graph.getNodeTable(),graph.isDirected());
 			int edge_count = 0;
 			for(int i = 0;i <graph.getEdgeCount();i++)
@@ -392,8 +338,6 @@ public class GetPollGraph {
 		
 		for(int i=0;i<rangraph.getNodeCount();i++)
 		{
-			//for(int j=0; j<rangraph.getNode(i).getDegree(); j++)
-			//{
 			Iterator<Node> current = rangraph.getNode(i).neighbors(); 
 			
 			while(current.hasNext())
@@ -410,16 +354,12 @@ public class GetPollGraph {
 						if(((Integer)((ineighNext).get("id"))).equals(((Integer)(tempNext.get("id")))))
 						{
 							counter +=1;
-							//System.out.ptintln(x+" "+tempNext.get("id")).intValue()+" "+ineighNext.get("id"));
 						}
 					}
 					while((ineigh.hasNext()&&temp.hasNext()));
 					
 				}
-				//rangraph.getEdgeTable().containsTuple(t)
-				
 			}
-			//}
 			
 		}
 		int n = rangraph.getNodeCount();
