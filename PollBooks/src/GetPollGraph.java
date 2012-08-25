@@ -34,6 +34,7 @@ import prefuse.data.io.CSVTableReader;
 import prefuse.data.io.DataIOException;
 import prefuse.data.io.GraphMLReader;
 import prefuse.render.DefaultRendererFactory;
+import prefuse.render.EdgeRenderer;
 import prefuse.render.LabelRenderer;
 import prefuse.render.ShapeRenderer;
 import prefuse.util.ColorLib;
@@ -104,8 +105,10 @@ public class GetPollGraph {
 		{
 			str = in.readLine();
 		}
-		boolean direct = (str=="directed 0")?false:true;
+		str = str.trim();
+		boolean direct = (str.equals("directed 0"))?false:true;
 		str = in.readLine();
+		str = str.trim();
 		while(!(str.equals("edge")||str.equals("edge [")))
 		{
 			str = in.readLine();
@@ -214,9 +217,16 @@ public class GetPollGraph {
 	{
         // Create a default ShapeRenderer
         FinalRenderer r = new FinalRenderer();
+        EdgeRenderer e = new EdgeRenderer(Constants.EDGE_TYPE_LINE, Constants.EDGE_ARROW_NONE);
+        if(graph.isDirected())
+        {
+        	e.setArrowType(Constants.EDGE_ARROW_FORWARD);
+        	e.setArrowHeadSize(7, 7);
+        }
         // create a new DefaultRendererFactory
         // This Factory will use the ShapeRenderer for all nodes.
-        vis.setRendererFactory(new DefaultRendererFactory(r));
+        vis.setRendererFactory(new DefaultRendererFactory(r,e));
+        System.out.println(graph.isDirected());
 	}
 	
 	public static void setUpActions()
@@ -238,6 +248,7 @@ public class GetPollGraph {
         // Similarly to the node coloring, we use a ColorAction for the 
         // edges
         ColorAction edges = new ColorAction("graph.edges", VisualItem.STROKECOLOR, ColorLib.gray(200));
+        
         //DataSizeAction size = new DataSizeAction("graph.nodes","degree",Constants.CONTINUOUS,Constants.SQRT_SCALE);
         //size.setMaximumSize(50);
         // Create an action list containing all color assignments
@@ -247,6 +258,8 @@ public class GetPollGraph {
         config.add(fill);
         config.add(edges);
         config.add(shape);
+        if(graph.isDirected())
+        	config.add(new ColorAction("graph.edges", VisualItem.FILLCOLOR, ColorLib.gray(200)));
         //config.add(size);
         // The layout ActionList recalculates 
         // the positions of the nodes.
