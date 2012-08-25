@@ -68,7 +68,7 @@ public class GetPollGraph {
         vis.run("layout");
         DegreePlot();		
 		setRandomGraphs();
-		setRandomGraphsClustringCoeff();
+		setRandomGraphsClusteringCoeff();
         return;
 	}
      
@@ -86,7 +86,7 @@ public class GetPollGraph {
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
 		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
-		//BufferedReader in = new BufferedReader(new FileReader("./blogs/polblogs.gml"));
+		//BufferedReader in = new BufferedReader(new FileReader("./polblogs/polblogs.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -367,7 +367,7 @@ public class GetPollGraph {
 		return counter;
 	}
 	
-	public static void setRandomGraphsClustringCoeff() throws Exception
+	public static void setRandomGraphsClusteringCoeff() throws Exception
 	{
 		BufferedWriter out = new BufferedWriter(new FileWriter("./ClusteringCoeffPlot.dat"));
 		out.write(((Double)CalcClusteringCoeff(graph)).toString());
@@ -393,7 +393,7 @@ public class GetPollGraph {
 			out.newLine();
 		}
 		out.close();
-		System.out.println("ClusteringCoefFile Created Successfully");
+		System.out.println("ClusterCoeffFile Created Successfully");
 	}
     
 }
