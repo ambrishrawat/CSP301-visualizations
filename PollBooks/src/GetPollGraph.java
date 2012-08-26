@@ -66,8 +66,8 @@ public class GetPollGraph {
         frame.setVisible(true); 
         vis.run("config");
         vis.run("layout");
-        DegreePlot();		
-		setRandomGraphs();
+        //DegreePlot();		
+		//setRandomGraphs();
 		setRandomGraphsClusteringCoeff();
         return;
 	}
@@ -85,8 +85,8 @@ public class GetPollGraph {
 		edges.addColumn("target", Integer.TYPE, 1);
 		nodes.addColumn("id", Integer.TYPE);
 		String type = new String();
-		//BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
-		BufferedReader in = new BufferedReader(new FileReader("./polblogs/polblogs.gml"));
+		BufferedReader in = new BufferedReader(new FileReader("./polbooks/polbooks.gml"));
+		//BufferedReader in = new BufferedReader(new FileReader("./polblogs/polblogs.gml"));
 		String str = new String();
 		str = in.readLine();
 		str = in.readLine();
@@ -406,7 +406,7 @@ public class GetPollGraph {
 		
 		for(int j=2; j<=100; j++)
 		{
-			System.out.println(j+"??????????????????????????????????????????????");
+			System.out.println(j);
 			Graph g = new Graph(graph.getNodeTable(),graph.isDirected());
 			int edge_count = 0;
 			for(int i = 0;i <graph.getEdgeCount();i++)
