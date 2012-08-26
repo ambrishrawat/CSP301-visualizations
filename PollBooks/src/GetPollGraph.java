@@ -352,16 +352,18 @@ public class GetPollGraph {
 	
 	public static double CalcClusteringCoeff(Graph rangraph)
 	{
-		double counter=0.0;
+		double accumulator=0.0;
 		
 		for(int i=0;i<rangraph.getNodeCount();i++)
 		{
+			double counter=0.0;
 			Iterator<Node> current = rangraph.getNode(i).neighbors(); 
-			
+			double c = 0.0;
 			while(current.hasNext())
 			{
-				Iterator<Node> temp = current;
+				Iterator<Node> temp = rangraph.getNode(i).neighbors();
 				Integer x = ((Integer)(current.next().get("id")));
+				c++;
 				while(temp.hasNext())
 				{
 					Node tempNext = temp.next();
@@ -377,22 +379,34 @@ public class GetPollGraph {
 					while((ineigh.hasNext()&&temp.hasNext()));
 					
 				}
+				
 			}
+			//System.out.println(c);
+			if(c>1)
+			{
+				counter = (counter)/(c*(c-1));
+				//System.out.println(counter);
+			}
+			if(rangraph.isDirected())
+				counter/=2;
+			accumulator+=counter;
+			
 			
 		}
-		int n = rangraph.getNodeCount();
-		counter = (20*counter)/(n*(n-1));
-		return counter;
+		
+		accumulator/=( rangraph.getNodeCount());
+		return accumulator;
 	}
 	
 	public static void setRandomGraphsClusteringCoeff() throws Exception
 	{
-		BufferedWriter out = new BufferedWriter(new FileWriter("./ClusteringCoeffPlot.dat"));
+		BufferedWriter out = new BufferedWriter(new FileWriter("./ClusterCoeff.dat"));
 		out.write(((Double)CalcClusteringCoeff(graph)).toString());
 		out.newLine();
+		
 		for(int j=2; j<=100; j++)
 		{
-			System.out.println(j);
+			System.out.println(j+"??????????????????????????????????????????????");
 			Graph g = new Graph(graph.getNodeTable(),graph.isDirected());
 			int edge_count = 0;
 			for(int i = 0;i <graph.getEdgeCount();i++)
@@ -410,6 +424,7 @@ public class GetPollGraph {
 			out.write(((Double)CalcClusteringCoeff(g)).toString());
 			out.newLine();
 		}
+		
 		out.close();
 		System.out.println("ClusterCoeffFile Created Successfully");
 	}
