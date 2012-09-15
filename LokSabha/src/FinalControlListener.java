@@ -21,11 +21,12 @@ public class FinalControlListener extends ControlAdapter implements Control
 		//if(item instanceof NodeItem)
 		//{
 			String label = ((String) item.get("Constituency"));
-			String id = ((String)item.get("MP Name"));
+			String id = ((String)item.get("MP name"));
 			jpub = new JPopupMenu();
 			jpub.add("Constituency: " + label);
 			jpub.add("MP Name: " + id);
-			jpub.show(e.getComponent(),0,0);
+			//System.out.println(label);
+			jpub.show(e.getComponent(),0,570);
 			
 	
 		//}

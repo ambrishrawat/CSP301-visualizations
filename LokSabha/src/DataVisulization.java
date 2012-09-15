@@ -127,7 +127,91 @@ public class DataVisulization extends Display implements Constants {
         
         // -- actions ---------------------------------------------------------
         ActionList config = new ActionList();
-        DataColorAction fill = new DataColorAction(DATA, "Political party",Constants.NOMINAL,VisualItem.FILLCOLOR);
+        /*
+         * ColorLib.rgba(208, 128, 128,200),
+        		ColorLib.rgba(208, 32, 0,200),
+        		ColorLib.rgba(208, 32, 32,200),
+        		ColorLib.rgba(208, 64, 32,200),
+        		ColorLib.rgba(208, 64, 64,200), 
+        		ColorLib.rgba(208, 96, 64,200),
+        		ColorLib.rgba(208, 96, 96,200),
+        		ColorLib.rgba(208, 128, 96,200),
+        		ColorLib.rgba(0, 0,200,150),
+        		ColorLib.rgba(208, 160, 128,200),
+        		ColorLib.rgba(208, 160, 160,200), 
+        		ColorLib.rgba(208, 192, 160,200), 
+        		ColorLib.rgba(208, 192, 192,200),
+        		ColorLib.rgba( 64, 208, 32,200),
+        		ColorLib.rgba( 32, 208,0,200),
+        		ColorLib.rgba( 32, 208,32,200),
+        		ColorLib.rgba( 0, 200,0,150),
+        		ColorLib.rgba( 64, 208,64,200), 
+        		ColorLib.rgba( 96, 208,64,200),
+        		ColorLib.rgba( 96, 208,96,200),
+        		ColorLib.rgba( 128, 208,96,200),
+        		ColorLib.rgba( 128, 208,128,200),
+        		ColorLib.rgba( 160, 208,128,200),
+        		ColorLib.rgba( 160, 208,160,200), 
+        		ColorLib.rgba( 192, 208,160,200), 
+        		ColorLib.rgba( 192, 208,192,200),
+        		ColorLib.rgba( 200, 0,0,200),
+        		ColorLib.rgba( 32, 0,208,200),
+        		ColorLib.rgba( 32, 32,208,200),
+        		ColorLib.rgba( 64, 32,208,200),
+        		ColorLib.rgba( 64, 64,208,200), 
+        		ColorLib.rgba( 96, 64,208,200),
+        		ColorLib.rgba( 96, 96,208,200),
+        		ColorLib.rgba( 128, 96,208,200),
+        		ColorLib.rgba( 128, 128,208,200),
+        		ColorLib.rgba( 160, 128,208,200),
+        		ColorLib.rgba( 160, 160,208,200), 
+        		ColorLib.rgba( 192, 160,208,200), 
+        		ColorLib.rgba( 192, 192,208,200),
+         */
+        
+        int[] palette = {
+        		ColorLib.hsba((float)0.0, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.025, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.05, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.2, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.1, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.125, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.150, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.175, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.075, (float)1, (float)1, (float)1),
+        		ColorLib.hsba((float)0.225, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.250, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.275, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.3, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.325, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.350,(float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.375, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.7, (float)1, (float)1, (float)0.70),
+        		ColorLib.hsba((float)0.425, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.450,(float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.475, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.5, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.525, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.550, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.575, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.6, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.625, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.650, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.675,(float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.4, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.725, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.750, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.775, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.8, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.825, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.850, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.875, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.9, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.925, (float)1, (float)1, (float)0.75),
+        		ColorLib.hsba((float)0.950, (float)1, (float)1, (float)0.75)
+        };
+        
+        DataColorAction fill = new DataColorAction(DATA, "Political party",Constants.NOMINAL,VisualItem.FILLCOLOR,palette);
 		fill.add(VisualItem.FIXED, ColorLib.rgba(200, 200, 255,200));
 		config.add(fill);
 		
@@ -141,7 +225,7 @@ public class DataVisulization extends Display implements Constants {
         // properties for any labels. Color updating is limited only to the
         // current focus items, ensuring faster performance.
         final Action update = new ZipColorAction(FOCUS);
-        m_vis.putAction("update", update);
+        //m_vis.putAction("update", update);
         
         // animate a change in color in the interface. this animation is quite
         // short, only 200ms, so that it does not impede with interaction.
@@ -247,7 +331,7 @@ public class DataVisulization extends Display implements Constants {
     
     private static Schema getDataSchema() {
         Schema s = PrefuseLib.getVisualItemSchema();
-        s.setDefault(VisualItem.INTERACTIVE, false);
+        s.setDefault(VisualItem.INTERACTIVE, true);
         s.setDefault(VisualItem.FILLCOLOR, ColorLib.rgb(100,100,75));
         return s;
     }
