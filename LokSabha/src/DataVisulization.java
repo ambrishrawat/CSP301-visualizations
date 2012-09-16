@@ -131,8 +131,8 @@ public class DataVisulization extends Display implements Constants {
             }
         });
         */
-        //FinalRenderer rf = new FinalRenderer();
-        m_vis.setRendererFactory(new DefaultRendererFactory());
+        FinalRenderer rf = new FinalRenderer();
+        m_vis.setRendererFactory(new DefaultRendererFactory(rf));
         
         // -- actions ---------------------------------------------------------
         ActionList config = new ActionList();
