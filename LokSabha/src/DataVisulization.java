@@ -1,10 +1,11 @@
 import java.awt.Font;
 import java.awt.Shape;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.Ellipse2D;
 
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import prefuse.Constants;
 import prefuse.Display;
@@ -16,11 +17,14 @@ import prefuse.action.animate.ColorAnimator;
 import prefuse.action.animate.LocationAnimator;
 import prefuse.action.assignment.ColorAction;
 import prefuse.action.assignment.DataColorAction;
+import prefuse.action.assignment.DataSizeAction;
+import prefuse.action.assignment.ShapeAction;
 import prefuse.action.layout.AxisLayout;
 import prefuse.activity.Activity;
 import prefuse.activity.ActivityAdapter;
 import prefuse.activity.SlowInSlowOutPacer;
 import prefuse.controls.PanControl;
+import prefuse.data.Graph;
 import prefuse.data.Schema;
 import prefuse.data.Table;
 import prefuse.data.Tuple;
@@ -35,14 +39,18 @@ import prefuse.data.io.CSVTableReader;
 import prefuse.data.query.SearchQueryBinding;
 import prefuse.data.search.SearchTupleSet;
 import prefuse.data.tuple.TupleSet;
+import prefuse.demos.GraphView;
 import prefuse.demos.ZipDecode;
+import prefuse.demos.GraphView.GraphMenuAction;
 import prefuse.demos.ZipDecode.StateLookupFunction;
 import prefuse.demos.ZipDecode.ZipColorAction;
+import prefuse.render.AbstractShapeRenderer;
 import prefuse.render.DefaultRendererFactory;
 import prefuse.render.ShapeRenderer;
 import prefuse.render.LabelRenderer;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
+import prefuse.util.GraphLib;
 import prefuse.util.PrefuseLib;
 import prefuse.util.ui.JSearchPanel;
 import prefuse.visual.VisualItem;
@@ -52,7 +60,7 @@ public class DataVisulization extends Display implements Constants {
 
     public static final String ZIPCODES = "./MPTrack-15_latest2.csv";
     public static final String STATES = "./MPTrack-15_latest.csv";
-    
+    private static String MenuActionLabel;
     // data groups
     private static final String DATA = "data";
     private static final String LABELS = "labels";
@@ -81,6 +89,7 @@ public class DataVisulization extends Display implements Constants {
     public DataVisulization(final Table t) {
         super(new Visualization());
         
+        MenuActionLabel = "Age";
         VisualTable vt = m_vis.addTable(DATA, t, getDataSchema());
         /*
          // this predicate makes sure only the continental states are included
@@ -122,8 +131,8 @@ public class DataVisulization extends Display implements Constants {
             }
         });
         */
-        FinalRenderer rf = new FinalRenderer();
-        m_vis.setRendererFactory(new DefaultRendererFactory(rf));
+        //FinalRenderer rf = new FinalRenderer();
+        m_vis.setRendererFactory(new DefaultRendererFactory());
         
         // -- actions ---------------------------------------------------------
         ActionList config = new ActionList();
@@ -214,6 +223,12 @@ public class DataVisulization extends Display implements Constants {
         DataColorAction fill = new DataColorAction(DATA, "Political party",Constants.NOMINAL,VisualItem.FILLCOLOR,palette);
 		fill.add(VisualItem.FIXED, ColorLib.rgba(200, 200, 255,200));
 		config.add(fill);
+		ShapeAction shape = new ShapeAction(DATA, Constants.SHAPE_ELLIPSE);
+		config.add(shape);
+		//DataSizeAction size = new DataSizeAction(DATA, MenuActionLabel);
+		//System.out.println(MenuActionLabel);
+		config.add(new RepaintAction());
+		//config.add(size);
 		
         ActionList layout = new ActionList();
         layout.add(new AxisLayout(DATA, "Latitude", Y_AXIS));
@@ -225,7 +240,7 @@ public class DataVisulization extends Display implements Constants {
         // properties for any labels. Color updating is limited only to the
         // current focus items, ensuring faster performance.
         final Action update = new ZipColorAction(FOCUS);
-        //m_vis.putAction("update", update);
+        m_vis.putAction("update", update);
         
         // animate a change in color in the interface. this animation is quite
         // short, only 200ms, so that it does not impede with interaction.
@@ -384,12 +399,49 @@ public class DataVisulization extends Display implements Constants {
     
     public static JFrame demo(String table) throws DataIOException {
         CSVTableReader tr = new CSVTableReader();
-        Table t = tr.readTable(table);        
+        Table t = tr.readTable(table);
         DataVisulization zd = new DataVisulization(t);
+        System.out.println(MenuActionLabel);
+        JMenu dataMenu = new JMenu("Data");
+        
+        dataMenu.add(new GraphMenuAction("Age","ctrl 1") {
+            protected void SelectMenu(){
+               MenuActionLabel = "Age"; //return GraphLib.getGrid(15,15);
+               System.out.println(MenuActionLabel);
+            }
+        });
+        dataMenu.add(new GraphMenuAction("Debates","ctrl 2") {
+            protected void SelectMenu() {
+            	MenuActionLabel = "Debates";
+            	System.out.println(MenuActionLabel);
+            	//    return GraphLib.getClique(10);
+            }
+        });
+        dataMenu.add(new GraphMenuAction("Private Number Bills","ctrl 3") {
+        	protected void SelectMenu(){
+        		MenuActionLabel = "Private Number Bills";
+                System.out.println(MenuActionLabel);
+
+        		//return GraphLib.getHoneycomb(5);
+            }
+        });
+        dataMenu.add(new GraphMenuAction("Questions","ctrl 4") {
+        	protected void SelectMenu(){
+        		
+        		MenuActionLabel = "Questions";
+        		System.out.println(MenuActionLabel);
+
+        		//return GraphLib.getBalancedTree(3,5);
+            }
+        });
+        JMenuBar menubar = new JMenuBar();
+        menubar.add(dataMenu);
         
         JFrame frame = new JFrame("p r e f u s e  |  l o k s a b h a");
         frame.getContentPane().add(zd);
+        frame.setJMenuBar(menubar);
         frame.pack();
+        
         return frame;
     }
     
@@ -406,5 +458,22 @@ public class DataVisulization extends Display implements Constants {
             }
         }
     }
+    
+    public abstract static class GraphMenuAction extends AbstractAction {
+        //private GraphView m_view;
+        public GraphMenuAction(String name, String accel) {
+           // m_view = view;
+            this.putValue(AbstractAction.NAME, name);
+            this.putValue(AbstractAction.ACCELERATOR_KEY,KeyStroke.getKeyStroke(accel));
+        }
+        public void actionPerformed(ActionEvent e) {
+
+         SelectMenu();
+         //System.out.println(MenuActionLabel);
+        	//m_view.setGraph(getGraph(), "label");
+        }
+        protected abstract void SelectMenu();
+    }
+    
     
 } // end of class ZipDecode
