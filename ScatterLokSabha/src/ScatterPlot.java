@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -18,6 +19,7 @@ import prefuse.action.RepaintAction;
 import prefuse.action.assignment.ColorAction;
 import prefuse.action.assignment.DataShapeAction;
 import prefuse.action.assignment.DataSizeAction;
+import prefuse.action.layout.AxisLabelLayout;
 import prefuse.action.layout.AxisLayout;
 import prefuse.controls.ToolTipControl;
 import prefuse.data.Table;
@@ -77,7 +79,7 @@ public class ScatterPlot extends Display {
         //DataShapeAction shape = new DataShapeAction(group, sfield);
         //m_vis.putAction("shape", shape);
         
-        DataSizeAction size = new DataSizeAction(group, "Age");
+        DataSizeAction size = new DataSizeAction(group, sfield);
         m_vis.putAction("size", size);
         ActionList draw = new ActionList();
         draw.add(x_axis);
@@ -122,9 +124,9 @@ public class ScatterPlot extends Display {
     
     public static void main(String[] argv) {
         String data = "./MPTrack-15_latest2.csv";
-        String xfield = "Age";
-        String yfield = "Attendance";
-        String sfield = "MP name";
+        String xfield = "State";
+        String yfield = "Political party";
+        String sfield = "Age";
         if ( argv.length >= 3 ) {
             data = argv[0];
             xfield = argv[1];
@@ -187,6 +189,9 @@ public class ScatterPlot extends Display {
                 Visualization vis = sp.getVisualization();
                 AxisLayout xaxis = (AxisLayout)vis.getAction("x");
                 xaxis.setDataField((String)xcb.getSelectedItem());
+
+                AxisLabelLayout xlabels = new AxisLabelLayout(sfield, xaxis);
+                vis.putAction("xlabels", xlabels);
                 vis.run("draw");
             }
         });
@@ -201,6 +206,11 @@ public class ScatterPlot extends Display {
                 Visualization vis = sp.getVisualization();
                 AxisLayout yaxis = (AxisLayout)vis.getAction("y");
                 yaxis.setDataField((String)ycb.getSelectedItem());
+                AxisLabelLayout ylabels = new AxisLabelLayout("ylab", yaxis);
+                NumberFormat nf = NumberFormat.getCurrencyInstance();
+                nf.setMaximumFractionDigits(0);
+                ylabels.setNumberFormat(nf);
+                
                 vis.run("draw");
             }
         });
@@ -214,12 +224,12 @@ public class ScatterPlot extends Display {
         scb.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Visualization vis = sp.getVisualization();
-                DataShapeAction s = (DataShapeAction)vis.getAction("shape");
+                DataSizeAction s = (DataSizeAction)vis.getAction("size");
                 s.setDataField((String)scb.getSelectedItem());
                 vis.run("draw");
             }
         });
-        toolbar.add(new JLabel("Shape: "));
+        toolbar.add(new JLabel("Size: "));
         toolbar.add(scb);
         toolbar.add(Box.createHorizontalStrut(spacing));
         toolbar.add(Box.createHorizontalGlue());
