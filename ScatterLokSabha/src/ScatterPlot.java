@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
@@ -25,7 +27,12 @@ import prefuse.controls.ToolTipControl;
 import prefuse.data.Table;
 import prefuse.data.io.CSVTableReader;
 import prefuse.data.io.DelimitedTextTableReader;
+import prefuse.data.query.ObjectRangeModel;
+import prefuse.render.AbstractShapeRenderer;
+import prefuse.render.AxisRenderer;
 import prefuse.render.DefaultRendererFactory;
+import prefuse.render.Renderer;
+import prefuse.render.RendererFactory;
 import prefuse.render.ShapeRenderer;
 import prefuse.util.ColorLib;
 import prefuse.visual.VisualItem;
@@ -40,7 +47,9 @@ import prefuse.visual.expression.VisiblePredicate;
 public class ScatterPlot extends Display {
 
     private static final String group = "data";
-    
+    private Rectangle2D m_ylabB = new Rectangle2D.Double();
+    private Rectangle2D m_xlabB = new Rectangle2D.Double();
+    private Rectangle2D m_dataB = new Rectangle2D.Double();
     //private ShapeRenderer m_shapeR = new ShapeRenderer();
     
     
@@ -58,8 +67,18 @@ public class ScatterPlot extends Display {
        // m_shapeR.ellipse(x, y, width, height)
         FinalRenderer r = new FinalRenderer();
         DefaultRendererFactory rf = new DefaultRendererFactory(r);
-        m_vis.setRendererFactory(rf);
-        
+       // m_vis.setRendererFactory(rf);
+        m_vis.setRendererFactory(new RendererFactory() {
+        //    AbstractShapeRenderer sr = new ShapeRenderer();
+        	FinalRenderer r = new FinalRenderer();
+            Renderer arY = new AxisRenderer();
+            Renderer arX = new AxisRenderer();
+            
+            public Renderer getRenderer(VisualItem item) {
+                return item.isInGroup("ylab") ? arY :
+                       item.isInGroup("xlab") ? arX : r;
+            }
+        });
         // --------------------------------------------------------------------
         // STEP 2: create actions to process the visual data
         
@@ -71,7 +90,15 @@ public class ScatterPlot extends Display {
         AxisLayout y_axis = new AxisLayout(group, yfield, 
                 Constants.Y_AXIS, VisiblePredicate.TRUE);
         m_vis.putAction("y", y_axis);
-
+        
+        
+        
+        AxisLabelLayout xlabels = new AxisLabelLayout("xlab", x_axis);
+        m_vis.putAction("xlabels", xlabels);
+        
+        AxisLabelLayout ylabels = new AxisLabelLayout("ylab", y_axis);
+        m_vis.putAction("ylabels", ylabels);
+        
         ColorAction color = new ColorAction(group, 
                 VisualItem.FILLCOLOR, ColorLib.rgba(100,100,255,100));
         m_vis.putAction("color", color);
@@ -79,11 +106,13 @@ public class ScatterPlot extends Display {
         //DataShapeAction shape = new DataShapeAction(group, sfield);
         //m_vis.putAction("shape", shape);
         
-        DataSizeAction size = new DataSizeAction(group, sfield);
+        DataSizeAction size = new DataSizeAction(group, sfield,Constants.CONTINUOUS,Constants.SQRT_SCALE);
         m_vis.putAction("size", size);
         ActionList draw = new ActionList();
         draw.add(x_axis);
         draw.add(y_axis);
+        draw.add(xlabels);
+        draw.add(ylabels);
         if ( sfield != null )
             {
         	//draw.add(shape);
@@ -100,6 +129,9 @@ public class ScatterPlot extends Display {
         setSize(700,450);
         setHighQuality(true);
         
+        //m_vis.run("xlabels");
+        m_vis.run("update");
+        m_vis.run("xlabels");
         ToolTipControl ttc = new ToolTipControl(new String[] {xfield,yfield});
         addControlListener(ttc);
         
@@ -189,10 +221,22 @@ public class ScatterPlot extends Display {
                 Visualization vis = sp.getVisualization();
                 AxisLayout xaxis = (AxisLayout)vis.getAction("x");
                 xaxis.setDataField((String)xcb.getSelectedItem());
-
-                AxisLabelLayout xlabels = new AxisLabelLayout(sfield, xaxis);
-                vis.putAction("xlabels", xlabels);
+                String []o = new String[100];
+                for(int i =0;i<100;i++)
+                	o[i]=" ";
+                ObjectRangeModel om = new ObjectRangeModel(o);
+                AxisLabelLayout xlabels = (AxisLabelLayout)vis.getAction("xlabels");
+                //xlabels.setRangeModel(
+                //xlabels.setRangeModel(om);
+                xlabels.setRangeModel(xaxis.getRangeModel());
+                //ObjectRangeModel disp = (ObjectRangeModel)xaxis.getRangeModel();
+            
+                //AxisLabelLayout xnew = new AxisLabelLayout("xlab", xaxis);
+                //xlabels = xnew;
+                //vis.putAction("xlabels", xlabels);
+                //draw.add(xlabels);
                 vis.run("draw");
+                //vis.run("update");
             }
         });
         toolbar.add(new JLabel("X: "));
@@ -206,10 +250,8 @@ public class ScatterPlot extends Display {
                 Visualization vis = sp.getVisualization();
                 AxisLayout yaxis = (AxisLayout)vis.getAction("y");
                 yaxis.setDataField((String)ycb.getSelectedItem());
-                AxisLabelLayout ylabels = new AxisLabelLayout("ylab", yaxis);
-                NumberFormat nf = NumberFormat.getCurrencyInstance();
-                nf.setMaximumFractionDigits(0);
-                ylabels.setNumberFormat(nf);
+                AxisLabelLayout ylabels = (AxisLabelLayout)vis.getAction("ylabels");
+                ylabels.setRangeModel(yaxis.getRangeModel());
                 
                 vis.run("draw");
             }
@@ -226,6 +268,7 @@ public class ScatterPlot extends Display {
                 Visualization vis = sp.getVisualization();
                 DataSizeAction s = (DataSizeAction)vis.getAction("size");
                 s.setDataField((String)scb.getSelectedItem());
+                //s.setScale(Constants.LOG_SCALE);
                 vis.run("draw");
             }
         });
