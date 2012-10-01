@@ -129,6 +129,7 @@ public class ScatterPlot extends Display {
         setSize(700,450);
         setHighQuality(true);
         
+        addControlListener(new FinalControlListener());
         //m_vis.run("xlabels");
         m_vis.run("update");
         m_vis.run("xlabels");
@@ -159,6 +160,8 @@ public class ScatterPlot extends Display {
         String xfield = "State";
         String yfield = "Political party";
         String sfield = "Age";
+        String sortxfield = "Age";
+        String sortyfield = "Age";
         if ( argv.length >= 3 ) {
             data = argv[0];
             xfield = argv[1];
@@ -167,7 +170,7 @@ public class ScatterPlot extends Display {
         }
         
         final ScatterPlot sp = demo(data, xfield, yfield, sfield);
-        JToolBar toolbar = getEncodingToolbar(sp, xfield, yfield, sfield);
+        JToolBar toolbar = getEncodingToolbar(sp, xfield, yfield, sfield, sortxfield,sortyfield);
         
         
         
@@ -199,7 +202,7 @@ public class ScatterPlot extends Display {
     }
     
     private static JToolBar getEncodingToolbar(final ScatterPlot sp,
-            final String xfield, final String yfield, final String sfield)
+            final String xfield, final String yfield, final String sfield,final String sortxfield,final String sortyfield)
     {
         int spacing = 10;
         
@@ -214,13 +217,30 @@ public class ScatterPlot extends Display {
         toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
         toolbar.add(Box.createHorizontalStrut(spacing));
         
-        final JComboBox xcb = new JComboBox(colnames);
+        String[] xcolumns = new String[15];
+        xcolumns[0] = "State";
+        xcolumns[1] = "Political party";
+        xcolumns[2] = "Gender";
+        xcolumns[3] = "Education qualifications";
+        xcolumns[4] = "Age";
+        xcolumns[5] = "Debates";
+        xcolumns[6] = "Private Member Bills";
+        xcolumns[7] = "Questions";
+        xcolumns[8] = "Attendance";
+        xcolumns[9] = "State's Debates average";
+        xcolumns[10] = "State's Private Member Bills  average";
+        xcolumns[11] = "State's Questions average";
+        xcolumns[12] = "State's Attendance average";
+        xcolumns[13] = "Latitude";
+        xcolumns[14] = "Longitude";
+        final JComboBox xcb = new JComboBox(xcolumns);
         xcb.setSelectedItem(xfield);
         xcb.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Visualization vis = sp.getVisualization();
                 AxisLayout xaxis = (AxisLayout)vis.getAction("x");
                 xaxis.setDataField((String)xcb.getSelectedItem());
+                xaxis.setDataType(Constants.ORDINAL);
                 String []o = new String[100];
                 for(int i =0;i<100;i++)
                 	o[i]=" ";
@@ -243,13 +263,17 @@ public class ScatterPlot extends Display {
         toolbar.add(xcb);
         toolbar.add(Box.createHorizontalStrut(2*spacing));
         
-        final JComboBox ycb = new JComboBox(colnames);
+        
+        
+        
+        final JComboBox ycb = new JComboBox(xcolumns);
         ycb.setSelectedItem(yfield);
         ycb.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Visualization vis = sp.getVisualization();
                 AxisLayout yaxis = (AxisLayout)vis.getAction("y");
                 yaxis.setDataField((String)ycb.getSelectedItem());
+                //yaxis.setDataType(Constants.UNKNOWN);
                 AxisLabelLayout ylabels = (AxisLabelLayout)vis.getAction("ylabels");
                 ylabels.setRangeModel(yaxis.getRangeModel());
                 
@@ -260,8 +284,14 @@ public class ScatterPlot extends Display {
         toolbar.add(ycb);
         toolbar.add(Box.createHorizontalStrut(2*spacing));
         
+        String[] scolumns = new String[5];
+        scolumns[0] = "age";
+        scolumns[1] = "debates";
+        scolumns[2] = "private member bills";
+        scolumns[3] = "questions";
+        scolumns[4] = "attendance";
         
-        final JComboBox scb = new JComboBox(colnames);
+        final JComboBox scb = new JComboBox(scolumns);
         scb.setSelectedItem(sfield);
         scb.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
