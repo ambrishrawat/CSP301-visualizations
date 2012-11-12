@@ -51,6 +51,7 @@ $linesLog = 0;
 
 $linearrayLog = array();
 
+
 foreach(split($lineseparator,$logcontent) as $lineLog) {
 
 	$linesLog++;
@@ -139,6 +140,7 @@ function parserLogs($csvfile)
 	echo "Table creation failed: (" . $mysqli->errno . ") " . $mysqli->error;
 	}
 		
+	$prevline = "Oct";	
 	/*$tt;
 	foreach(split(" ",$csvcontent) as $tt)
 	{
@@ -178,12 +180,46 @@ function parserLogs($csvfile)
 			$milsec = explode("-",$tempArray1[0],3);
 	
 	
-			$linearray = "'".$stampEdgeTag[1]."','".$stampEdgeTag[2]."',".$stamp[2].",'".$stamp[1]."',".$stamp[5].",'".$stamp[0]."','".$stamp[3]."','".$stamp[4]."',".$milsec[2].",".$nodesSeparated[0].",".$nodesSeparated[1];		
+			$linearray = "'".$stampEdgeTag[1]."','".$stampEdgeTag[2]."',".$stamp[2].",'".$stamp[1]."',".$stamp[5].",'".$stamp[0]."','".$stamp[3]."','".$stamp[4]."',".$milsec[2].",".$nodesSeparated[0].",".$nodesSeparated[1];
+			$weekarray = "'".$stampEdgeTag[1]."','".$stampEdgeTag[2]."',".$nodesSeparated[0].",".$nodesSeparated[1];		
 			$res = $mysqli->query("INSERT INTO temp VALUES(".$linearray.")");
 			
-		
+			
+			if((strcmp("Sun",$prevline)==0)&&(strcmp("Mon",$stamp[0])==0))
+			{
+				echo "\nTAG";
+				//rename and make new week files
+				$rw = $mysqli->query("CREATE TABLE IF NOT EXISTS week1(edge VARCHAR(15), tag VARCHAR(20), node1 INT(4), node2 INT(4), freq INT(10) , UNIQUE INDEX id(edge,tag))");					//$rm = $mysqli->query("CREATE TABLE IF NOT EXISTS month(edge VARCHAR(15), tag VARCHAR(20), month VARCHAR(3), year INT(4), node1 INT(4), node2 INT(4), freq INT(10) , UNIQUE INDEX id(edge,tag,month))");				
+				$rw = $mysqli->query("CREATE TABLE IF NOT EXISTS week2(edge VARCHAR(15), tag VARCHAR(20), node1 INT(4), node2 INT(4), freq INT(10) , UNIQUE INDEX id(edge,tag))");
+				$rw = $mysqli->query("CREATE TABLE IF NOT EXISTS week3(edge VARCHAR(15), tag VARCHAR(20), node1 INT(4), node2 INT(4), freq INT(10) , UNIQUE INDEX id(edge,tag))");
+				$rm = $mysqli->query("DROP TABLE IF EXISTS week4");//Drop Month3
+				$rm = $mysqli->query("RENAME TABLE week3 TO week4, week2 TO week3, week1 TO week2, currweek TO week1");
+				$rw = $mysqli->query("CREATE TABLE IF NOT EXISTS currweek(edge VARCHAR(15), tag VARCHAR(20), node1 INT(4), node2 INT(4), freq INT(10) , UNIQUE INDEX id(edge,tag))");
+				//$rw = $mysqli->query("INSERT INTO currweek SELECT edge, tag, node1, node2, freq FROM temp ON DUPLICATE KEY UPDATE currmonth.freq = currmonth.freq + daysData.freq");
+				$rw = $mysqli->query("INSERT INTO currweek VALUES(".$weekarray.",1) ON DUPLICATE KEY UPDATE currweek.freq = currweek.freq + 1");
+					
+			}
+			else
+			{
+				/*
+				if($lines<=3)
+				{
+					echo "\n".$weekarray."\n";
+					if($lines==3)
+						exit;
+				}
+				*/
+				$rw = $mysqli->query("CREATE TABLE IF NOT EXISTS currweek(edge VARCHAR(15), tag VARCHAR(20), node1 INT(4), node2 INT(4), freq INT(10) , UNIQUE INDEX id(edge,tag))");
+				//$rw = $mysqli->query("INSERT INTO currweek SELECT edge, tag, node1, node2, freq FROM temp ON DUPLICATE KEY UPDATE currmonth.freq = currmonth.freq + daysData.freq");
+				$rw = $mysqli->query("INSERT INTO currweek VALUES(".$weekarray.",1) ON DUPLICATE KEY UPDATE currweek.freq = currweek.freq + 1");		
+			}
+
+			$prevline = $stamp[0];
 		
 		}
+		
+
+		
 	}
 	$r = $mysqli->query("DROP TABLE IF EXISTS daysData");
 	$r = $mysqli->query("CREATE TABLE daysData(edge VARCHAR(15), tag VARCHAR(20), date INT(2), month VARCHAR(3), year INT(4), day VARCHAR(3), node1 INT(4), node2 INT(4), freq INT(10) ,UNIQUE INDEX id(edge,tag,date))");
