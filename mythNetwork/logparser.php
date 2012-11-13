@@ -317,6 +317,50 @@ function parserLogs($csvfile)
 		}
 	}
 	
+	$query = "SELECT DISTINCT year FROM daysData";
+
+	$transYear = 0;
+	//$row = array();
+	$nameYear = array();
+	/* execute multi query */
+	if ($mysqli->multi_query($query)) 
+	{
+		do
+		{
+	        /* store first result set */
+	        if ($result = $mysqli->use_result()) 
+	        {
+	          	while ($row = $result->fetch_row()) 
+	          	{
+	                printf("%s\n", $row[0]);
+	                $namesYear[$transYear] = $row[0];
+				$transYear++;
+				}		
+	        	    $result->close();
+			}
+     /* print divider */
+		     if ($mysqli->more_results()) {
+				printf("-----------------\n");
+		     }
+		 } while ($mysqli->next_result());
+	}
+
+	
+	if($transYear == 1)
+	{
+		$ry = $mysqli->query("CREATE TABLE IF NOT EXISTS curryear(edge VARCHAR(15), tag VARCHAR(20), year INT(4), node1 INT(4), node2 INT(4), freq INT(10) , UNIQUE INDEX id(edge,tag,year))");
+		$ry = $mysqli->query("INSERT INTO curryear SELECT edge, tag, year, node1, node2, freq FROM daysData ON DUPLICATE KEY UPDATE curryear.freq = curryear.freq + daysData.freq");
+		
+	}
+	else
+	{
+		$ry = $mysqli->query("DROP TABLE IF EXISTS year1");//Drop Month3
+		$ry = $mysqli->query("RENAME TABLE curryear TO year1");
+		$ry = $mysqli->query("CREATE TABLE IF NOT EXISTS curryear(edge VARCHAR(15), tag VARCHAR(20), year INT(4), node1 INT(4), node2 INT(4), freq INT(10) , UNIQUE INDEX id(edge,tag,year))");
+		$ry = $mysqli->query("INSERT INTO year1 SELECT edge, tag, year, node1, node2, freq FROM daysData WHERE daysData.year='".$namesYear[0]."' ON DUPLICATE KEY UPDATE year1.freq = year1.freq + daysData.freq");
+		$ry = $mysqli->query("INSERT INTO curryear SELECT edge, tag, year, node1, node2, freq FROM daysData WHERE daysData.year='".$namesYear[1]."' ON DUPLICATE KEY UPDATE curryear.freq = curryear.freq + daysData.freq");
+		
+	}
 /* close connection */
 $mysqli->close();
 
